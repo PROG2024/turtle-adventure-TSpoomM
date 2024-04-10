@@ -337,19 +337,20 @@ class ChasingEnemy(Enemy):
                  color: str):
         super().__init__(game, size, color)
         self.__id = None
+        self.speed = 1
 
     def create(self) -> None:
         self.__id = self.canvas.create_rectangle(0, 0, self.size, self.size, fill=self.color)
 
     def update(self) -> None:
         if self.x > self.game.player.x:
-            self.x -= 1
+            self.x -= self.speed
         if self.x < self.game.player.x:
-            self.x += 1
+            self.x += self.speed
         if self.y > self.game.player.y:
-            self.y -= 1
+            self.y -= self.speed
         if self.y < self.game.player.y:
-            self.y += 1
+            self.y += self.speed
         if self.hits_player():
             self.game.game_over_lose()
 
@@ -372,6 +373,7 @@ class FencingEnemy(Enemy):
                  color: str):
         super().__init__(game, size, color)
         self.__id = None
+        self.speed = 1
 
     def create(self) -> None:
         self.__id = self.canvas.create_rectangle(0, 0, self.size, self.size, fill=self.color)
@@ -380,19 +382,19 @@ class FencingEnemy(Enemy):
 
         if (self.x == self.game.home.x + (self.game.home.size / 2) and self.y <= self.game.home.y +
                 (self.game.home.size / 2)):
-            self.y += 1
+            self.y += self.speed
 
         if (self.x >= self.game.home.x - (self.game.home.size / 2) and self.y == self.game.home.y +
                 (self.game.home.size / 2)):
-            self.x -= 1
+            self.x -= self.speed
 
         if (self.x == self.game.home.x - (self.game.home.size / 2) and self.y >= self.game.home.y -
                 (self.game.home.size / 2)):
-            self.y -= 1
+            self.y -= self.speed
 
         if (self.x <= self.game.home.x + (self.game.home.size / 2) and self.y == self.game.home.y -
                 (self.game.home.size / 2)):
-            self.x += 1
+            self.x += self.speed
 
         # Check if the player hits this enemy
         if self.hits_player():
@@ -413,22 +415,24 @@ class CustomEnemy(Enemy):
 
     def __init__(self, game: "TurtleAdventureGame", size: int, color: str):
         super().__init__(game, size, color)
-        self.dx = 3
-        self.dy = 2
+        self.__id = None
+        self.speed = 0.5
 
     def create(self) -> None:
-        pass
+        # Create the visual representation of the custom enemy
+        self.__id = self.canvas.create_rectangle(0, 0, self.size, self.size*2, fill=self.color)
 
     def update(self) -> None:
-        self.x += self.dx
-        self.y += self.dy
+
+        self.x += self.speed
 
         # Check if the player hits this enemy
         if self.hits_player():
             self.game.game_over_lose()
 
     def render(self) -> None:
-        pass
+        self.canvas.coords(self.__id, self.x - self.size / 2, self.y - self.size / 2, self.x + self.size / 2,
+                           self.y + self.size / 2)
 
     def delete(self) -> None:
         pass
@@ -448,6 +452,7 @@ class EnemyGenerator:
         self.__game.after(1000, self.create_enemy)
         self.__game.after(3000, self.create_enemy2)
         self.__game.after(4000, self.create_enemy3)
+        self.__game.after(2000, self.create_enemy4)
 
     @property
     def game(self) -> "TurtleAdventureGame":
@@ -481,6 +486,7 @@ class EnemyGenerator:
         new_enemy.x = random.randrange(0, self.game.canvas.winfo_width())
         new_enemy.y = random.randrange(0, self.game.canvas.winfo_height())
         self.game.add_element(new_enemy)
+        self.__game.after(5000, self.create_enemy2)
 
     def create_enemy3(self) -> None:
         """
@@ -489,6 +495,16 @@ class EnemyGenerator:
         new_enemy = FencingEnemy(self.__game, 10, "yellow")
         new_enemy.x = self.game.home.x + (self.game.home.size / 2)
         new_enemy.y = self.game.home.y - (self.game.home.size / 2)
+        self.game.add_element(new_enemy)
+        self.__game.after(10000, self.create_enemy3)
+
+    def create_enemy4(self) -> None:
+        """
+        Create a new enemy, possibly based on the game level
+        """
+        new_enemy = CustomEnemy(self.__game, 500, "purple")
+        new_enemy.x = -250
+        new_enemy.y = self.game.winfo_height() / 2
         self.game.add_element(new_enemy)
 
 
