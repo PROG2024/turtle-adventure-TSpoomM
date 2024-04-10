@@ -337,7 +337,7 @@ class ChasingEnemy(Enemy):
                  color: str):
         super().__init__(game, size, color)
         self.__id = None
-        self.speed = 1
+        self.speed = 2
 
     def create(self) -> None:
         self.__id = self.canvas.create_rectangle(0, 0, self.size, self.size, fill=self.color)
@@ -472,11 +472,11 @@ class EnemyGenerator:
         """
         Create a new enemy, possibly based on the game level
         """
-        new_enemy = RandomWalkEnemy(self.__game, 20, "red")
+        new_enemy = RandomWalkEnemy(self.__game, 20, "purple")
         new_enemy.x = random.randrange(0, self.game.canvas.winfo_width())
         new_enemy.y = random.randrange(0, self.game.canvas.winfo_height())
         self.game.add_element(new_enemy)
-        self.__game.after(5000, self.create_enemy)
+        self.__game.after(1000, self.create_enemy)
 
     def create_enemy2(self) -> None:
         """
@@ -486,7 +486,7 @@ class EnemyGenerator:
         new_enemy.x = random.randrange(0, self.game.canvas.winfo_width())
         new_enemy.y = random.randrange(0, self.game.canvas.winfo_height())
         self.game.add_element(new_enemy)
-        self.__game.after(5000, self.create_enemy2)
+        self.__game.after(2000, self.create_enemy2)
 
     def create_enemy3(self) -> None:
         """
@@ -502,7 +502,7 @@ class EnemyGenerator:
         """
         Create a new enemy, possibly based on the game level
         """
-        new_enemy = CustomEnemy(self.__game, 500, "purple")
+        new_enemy = CustomEnemy(self.__game, 500, "red")
         new_enemy.x = -250
         new_enemy.y = self.game.winfo_height() / 2
         self.game.add_element(new_enemy)
