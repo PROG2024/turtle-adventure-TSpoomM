@@ -343,13 +343,13 @@ class ChasingEnemy(Enemy):
 
     def update(self) -> None:
         if self.x > self.game.player.x:
-            self.x -= 2
+            self.x -= 1
         if self.x < self.game.player.x:
-            self.x += 2
+            self.x += 1
         if self.y > self.game.player.y:
-            self.y -= 2
+            self.y -= 1
         if self.y < self.game.player.y:
-            self.y += 2
+            self.y += 1
         if self.hits_player():
             self.game.game_over_lose()
 
@@ -377,20 +377,22 @@ class FencingEnemy(Enemy):
         self.__id = self.canvas.create_rectangle(0, 0, self.size, self.size, fill=self.color)
 
     def update(self) -> None:
-        if self.x == self.game.home.x - (self.game.home.size / 2) and self.y >= self.game.home.y - (self.game.home.size / 2):
+
+        if (self.x == self.game.home.x + (self.game.home.size / 2) and self.y <= self.game.home.y +
+                (self.game.home.size / 2)):
+            self.y += 1
+
+        if (self.x >= self.game.home.x - (self.game.home.size / 2) and self.y == self.game.home.y +
+                (self.game.home.size / 2)):
+            self.x -= 1
+
+        if (self.x == self.game.home.x - (self.game.home.size / 2) and self.y >= self.game.home.y -
+                (self.game.home.size / 2)):
             self.y -= 1
-        # elif self.steps < 2 * self.side_length:
-        #     self.x -= self.dy
-        #     self.y += self.dx
-        #     self.steps += abs(self.dy)
-        # elif self.steps < 3 * self.side_length:
-        #     self.x -= self.dx
-        #     self.y -= self.dy
-        #     self.steps += abs(self.dx)
-        # else:
-        #     self.x += self.dy
-        #     self.y -= self.dx
-        #     self.steps += abs(self.dy)
+
+        if (self.x <= self.game.home.x + (self.game.home.size / 2) and self.y == self.game.home.y -
+                (self.game.home.size / 2)):
+            self.x += 1
 
         # Check if the player hits this enemy
         if self.hits_player():
@@ -444,8 +446,8 @@ class EnemyGenerator:
 
         # Schedule the creation of enemies based on the game level
         self.__game.after(1000, self.create_enemy)
-        self.__game.after(1000, self.create_enemy2)
-        self.__game.after(1000, self.create_enemy3)
+        self.__game.after(3000, self.create_enemy2)
+        self.__game.after(4000, self.create_enemy3)
 
     @property
     def game(self) -> "TurtleAdventureGame":
@@ -466,17 +468,18 @@ class EnemyGenerator:
         Create a new enemy, possibly based on the game level
         """
         new_enemy = RandomWalkEnemy(self.__game, 20, "red")
-        new_enemy.x = 100
-        new_enemy.y = 100
+        new_enemy.x = random.randrange(0, self.game.canvas.winfo_width())
+        new_enemy.y = random.randrange(0, self.game.canvas.winfo_height())
         self.game.add_element(new_enemy)
+        self.__game.after(5000, self.create_enemy)
 
     def create_enemy2(self) -> None:
         """
         Create a new enemy, possibly based on the game level
         """
         new_enemy = ChasingEnemy(self.__game, 20, "blue")
-        new_enemy.x = 100
-        new_enemy.y = 100
+        new_enemy.x = random.randrange(0, self.game.canvas.winfo_width())
+        new_enemy.y = random.randrange(0, self.game.canvas.winfo_height())
         self.game.add_element(new_enemy)
 
     def create_enemy3(self) -> None:
@@ -484,7 +487,7 @@ class EnemyGenerator:
         Create a new enemy, possibly based on the game level
         """
         new_enemy = FencingEnemy(self.__game, 10, "yellow")
-        new_enemy.x = self.game.home.x - (self.game.home.size / 2)
+        new_enemy.x = self.game.home.x + (self.game.home.size / 2)
         new_enemy.y = self.game.home.y - (self.game.home.size / 2)
         self.game.add_element(new_enemy)
 
